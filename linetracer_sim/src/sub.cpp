@@ -65,7 +65,7 @@ void mysub_callback(rclcpp::Node::SharedPtr node,rclcpp::Publisher<geometry_msgs
     // 빈 프레임이 들어올 경우 에러 방지
     if (frame.empty()) return; 
 
-    cv::Rect roi_rect(0, 270, 640, 90);
+    cv::Rect roi_rect(0, frame.rows * 3 / 4, frame.cols, frame.rows / 4);
     cv::Mat roi = frame(roi_rect);
 
     cv::Mat gray;
@@ -74,7 +74,7 @@ void mysub_callback(rclcpp::Node::SharedPtr node,rclcpp::Publisher<geometry_msgs
     //결과 = 입력 + (목표평균 - 현재평균)
     cv::Scalar avg_pixel = cv::mean(gray);
     //목표 밝기 설정
-    double target_mean = 100.0;
+    double target_mean = 110.0;
 
     gray = gray+(target_mean-avg_pixel[0]);
 
@@ -100,10 +100,10 @@ void mysub_callback(rclcpp::Node::SharedPtr node,rclcpp::Publisher<geometry_msgs
 
     float leftvel;
     float rifhtvel;
-    double k = 0.2;
+    double k = 0.14;
     
-    leftvel = 100 - k* error;
-    rifhtvel = -(100+k*error);
+    leftvel = 120 - k* error;
+    rifhtvel = -(120+k*error);
 
     geometry_msgs::msg::Vector3 vel;
 
@@ -143,8 +143,10 @@ int main(int argc, char* argv[])
     fn = std::bind(mysub_callback,node,mypub, _1);
     
     
-    auto mysub = node->create_subscription<sensor_msgs::msg::CompressedImage>("pub_video", qos_profile, fn);
-    
+    //auto mysub = node->create_subscription<sensor_msgs::msg::CompressedImage>("pub_video", qos_profile, fn);
+
+    //camera
+    auto mysub = node->create_subscription<sensor_msgs::msg::CompressedImage>("image/compressed", qos_profile, fn);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
