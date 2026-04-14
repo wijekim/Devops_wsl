@@ -5,23 +5,11 @@ ROS 2 기반의 카메라 영상을 활용한 **차선 인식 및 추종 시뮬�
 
 ---
 
-## 📺 시연 영상
+## 실행 영상
 
 | RAPAI5 시점 | 사람 시점 |
 |:-----------:|:---------:|
 | [YouTube Shorts](https://youtube.com/shorts/Y-UWfVWqSPo?si=fzs4Lk2MH_RkBDJC) | [YouTube](https://youtu.be/6H_-eKHCJzQ) |
-
----
-
-## 📦 패키지 정보
-
-| 항목 | 내용 |
-|------|------|
-| 패키지명 | `lanefollow_sim` |
-| 버전 | 0.0.0 |
-| 빌드 시스템 | `ament_cmake` (C++14) |
-| ROS 버전 | ROS 2 |
-| 유지관리자 | weejea13@naver.com |
 
 ---
 
@@ -41,7 +29,7 @@ lanefollow_sim/
 
 ---
 
-## ⚙️ 동작 원리
+## 동작 원리
 
 ### 전체 처리 흐름
 
@@ -94,7 +82,7 @@ k = 0.18  (비례 게인)
 
 ---
 
-## 🔍 코드 상세 설명
+## 코드설명
 
 ### `sub.cpp` — 메인 노드
 
@@ -105,13 +93,13 @@ cv::Point left_pt(150, 45);   // 좌측 차선 추적 시작 위치 (ROI 내 좌
 cv::Point right_pt(490, 45);  // 우측 차선 추적 시작 위치 (ROI 내 우측)
 ```
 
-좌/우 차선의 **이전 프레임 위치**를 전역으로 유지해, 차선을 놓쳤을 때 마지막 위치를 기준으로 재탐색합니다.
+좌/우 차선의 **이전 프레임 위치**를 전역으로 유지해, 차선을 놓쳤을 때 마지막 위치를 기준으로 재탐색.
 
 ---
 
 #### `mysub_callback()` — 핵심 콜백 함수
 
-카메라 토픽이 들어올 때마다 호출되며, 아래 순서로 처리합니다.
+카메라 토픽이 들어올 때마다 호출되며, 아래 순서로 처리
 
 ```cpp
 // ① 압축 이미지 디코딩
@@ -123,7 +111,7 @@ cv::Mat frame = cv::imdecode(cv::Mat(msg->data), cv::IMREAD_COLOR);
 cv::Rect roi_rect(0, frame.rows * 3 / 4, frame.cols, frame.rows / 4);
 cv::Mat roi = frame(roi_rect);
 ```
-> 도로 차선은 대부분 화면 하단에 위치하므로, 불필요한 배경 영역을 제외해 연산 효율을 높입니다.
+> 도로 차선은 대부분 화면 하단에 위치하므로, 불필요한 배경 영역을 제외.
 
 ```cpp
 // ③ 그레이스케일 변환 + 밝기 정규화
@@ -131,7 +119,7 @@ cv::cvtColor(roi, gray, cv::COLOR_BGR2GRAY);
 double target_mean = 90.0;
 gray = gray + (target_mean - cv::mean(gray)[0]);
 ```
-> 조명 환경이 달라져도 항상 평균 밝기 **90**으로 맞춰 이진화 품질을 일정하게 유지합니다.
+> 조명 환경이 달라져도 항상 평균 밝기 **90**으로 맞춰 이진화을 일정하게 유지
 
 ```cpp
 // ④ 이진화 — 밝기 150 이상인 픽셀(흰 차선)만 추출
@@ -282,7 +270,7 @@ return (image_center - lines_center);
 
 ---
 
-## 📡 ROS 2 인터페이스
+## ROS 2 인터페이스
 
 ### 구독 (Subscribe)
 
@@ -363,9 +351,3 @@ ros2 topic echo /image/compressed
 ```
 
 ---
-
-## 📝 참고 사항
-
-- `dxl.cpp` / `dxl.hpp`는 실제 Dynamixel 하드웨어 제어용 코드이며, 현재 빌드 타겟(`sub`)에는 직접 링크되지 않습니다. 하드웨어 연동 시 별도 실행 파일을 추가하거나 통합이 필요합니다.
-- 기본 모터 모델은 `MX12W`로 설정되어 있으며, `dxl.hpp`의 `DXL_MODEL` 정의를 변경하여 다른 모터로 전환 가능합니다.
-- ROI는 프레임 하단 1/4 영역을 사용합니다. 카메라 해상도나 설치 높이에 따라 `sub.cpp`의 ROI 설정 조정이 필요할 수 있습니다.
