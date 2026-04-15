@@ -1,4 +1,4 @@
-[lanefollow_sim.drawio](https://github.com/user-attachments/files/26734181/lanefollow_sim.drawio)# lanefollow_sim
+# lanefollow_sim
 
 ROS 2 기반의 카메라 영상을 활용한 **차선 인식 및 추종 시뮬레이션** 패키지입니다.  
 카메라로부터 압축 이미지를 구독하고, OpenCV를 이용해 좌우 차선을 실시간으로 검출한 뒤, Proportional 제어를 통해 Dynamixel 모터의 속도 명령을 생성합니다.
