@@ -1,4 +1,4 @@
-# lanefollow_sim
+[lanefollow_sim.drawio](https://github.com/user-attachments/files/26734181/lanefollow_sim.drawio)# lanefollow_sim
 
 ROS 2 기반의 카메라 영상을 활용한 **차선 인식 및 추종 시뮬레이션** 패키지입니다.  
 카메라로부터 압축 이미지를 구독하고, OpenCV를 이용해 좌우 차선을 실시간으로 검출한 뒤, Proportional 제어를 통해 Dynamixel 모터의 속도 명령을 생성합니다.
@@ -12,6 +12,104 @@ ROS 2 기반의 카메라 영상을 활용한 **차선 인식 및 추종 시뮬�
 | [YouTube Shorts](https://youtube.com/shorts/Y-UWfVWqSPo?si=fzs4Lk2MH_RkBDJC) | [YouTube](https://youtu.be/6H_-eKHCJzQ) |
 
 ---
+
+## 블럭도
+[Upload<mxfile host="app.diagrams.net">
+  <diagram id="T44GJkBbdx20wuZ62Xwo" name="페이지-1">
+    <mxGraphModel dx="1488" dy="782" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pkg_video" parent="1" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;" value="&lt;b&gt;video_rapi5&lt;/b&gt;" vertex="1">
+          <mxGeometry height="180" width="320" x="60" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="video_node" parent="pkg_video" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;VideoCapture Node&lt;/b&gt;&#xa;(video_pub)" vertex="1">
+          <mxGeometry height="60" width="200" x="60" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="video_input" parent="pkg_video" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=10;" value="📂 동영상 파일&#xa;(MP4 / AVI)" vertex="1">
+          <mxGeometry height="36" width="200" x="60" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg_dxl" parent="1" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;rounded=1;" value="&lt;b&gt;dxl_rapi5 (dxl_nano)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="200" width="320" x="60" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="dxl_node" parent="pkg_dxl" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="&lt;b&gt;DXL Control Node&lt;/b&gt;&#xa;(dxl_nano_node)" vertex="1">
+          <mxGeometry height="60" width="200" x="60" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dxl_sub" parent="pkg_dxl" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=10;" value="Subscribe: /cmd_vel&#xa;(geometry_msgs/Twist)" vertex="1">
+          <mxGeometry height="36" width="200" x="60" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="dxl_output" parent="pkg_dxl" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=10;" value="⚙️ Dynamixel 모터 속도 출력&#xa;(좌/우 바퀴 RPM)" vertex="1">
+          <mxGeometry height="36" width="200" x="60" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg_lane" parent="1" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;rounded=1;" value="&lt;b&gt;lanefollow_sim&lt;/b&gt;" vertex="1">
+          <mxGeometry height="720" width="740" x="500" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="img_sub" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;Image Subscriber&lt;/b&gt;&#xa;Subscribe: /image_raw&#xa;(sensor_msgs/Image)" vertex="1">
+          <mxGeometry height="60" width="280" x="220" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="preproc" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="&lt;b&gt;영상 전처리&lt;/b&gt;&#xa;① Grayscale 변환&#xa;② Binary threshold (이진화)&#xa;③ ROI 설정 (하단 관심영역)" vertex="1">
+          <mxGeometry height="80" width="280" x="220" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="line_detect" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="&lt;b&gt;라인 검출 (알고리즘 2)&lt;/b&gt;&#xa;• 좌측 초기 탐색: x = W/4&#xa;• 우측 초기 탐색: x = 3W/4&#xa;• 라인트레이서 방식으로 각 라인 무게중심 추적&#xa;• 라인 소실 시 이전 위치 유지" vertex="1">
+          <mxGeometry height="100" width="280" x="220" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="error_calc" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="&lt;b&gt;Position Error 계산&lt;/b&gt;&#xa;error = 영상중심_x&#xa;  − (left_cx + right_cx) / 2" vertex="1">
+          <mxGeometry height="70" width="280" x="220" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="vel_calc" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="&lt;b&gt;좌우 속도 명령 계산&lt;/b&gt;&#xa;left_vel  = base_vel + k × error&#xa;right_vel = base_vel − k × error&#xa;(k = 0.5)" vertex="1">
+          <mxGeometry height="80" width="280" x="220" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="startstop" parent="pkg_lane" style="rhombus;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="&lt;b&gt;Start / Stop 제어&lt;/b&gt;&#xa;kbhit() + getch()&#xa;&#39;s&#39; → mode=true (출발)&#xa;&#39;q&#39; → mode=false (정지)" vertex="1">
+          <mxGeometry height="120" width="200" x="460" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="cmd_pub" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="&lt;b&gt;cmd_vel Publisher&lt;/b&gt;&#xa;Publish: /cmd_vel&#xa;(geometry_msgs/Twist)&#xa;mode=true 일 때만 발행" vertex="1">
+          <mxGeometry height="60" width="280" x="220" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="display" parent="pkg_lane" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" value="&lt;b&gt;화면 출력 (cv::imshow)&lt;/b&gt;&#xa;• 원본 영상&#xa;• 이진화 결과 영상&#xa;• error 값&#xa;• 좌/우 속도 명령값&#xa;• 처리 시간 (ms)" vertex="1">
+          <mxGeometry height="130" width="210" x="490" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="pkg_lane" source="img_sub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#9673a6;fontSize=10;" target="preproc" value="cv::Mat frame">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="pkg_lane" source="preproc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d79b00;fontSize=10;" target="line_detect" value="binary ROI image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp1" edge="1" parent="pkg_lane" source="preproc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;fontSize=10;dashed=1;" target="display" value="이진화 영상">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="pkg_lane" source="line_detect" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d79b00;fontSize=10;" target="error_calc" value="left_cx, right_cx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="pkg_lane" source="error_calc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d79b00;fontSize=10;" target="vel_calc" value="error">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp2" edge="1" parent="pkg_lane" source="error_calc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;fontSize=10;dashed=1;" target="display" value="error값">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="pkg_lane" source="vel_calc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;fontSize=10;" target="startstop" value="left/right vel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp3" edge="1" parent="pkg_lane" source="vel_calc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;fontSize=10;dashed=1;" target="display" value="속도값">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="pkg_lane" source="startstop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#82b366;fontSize=10;" target="cmd_pub" value="mode=true → 발행&#xa;mode=false → 0 발행">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp0" edge="1" parent="pkg_lane" source="img_sub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;fontSize=10;dashed=1;" target="display" value="원본 영상">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_img_topic" edge="1" parent="1" source="video_node" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#6c8ebf;fontColor=#6c8ebf;fontSize=10;fontStyle=1;" target="img_sub" value="/image_raw&#xa;(sensor_msgs/Image)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cmd_topic" edge="1" parent="1" source="cmd_pub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#82b366;fontColor=#82b366;fontSize=10;fontStyle=1;" target="dxl_node" value="/cmd_vel&#xa;(geometry_msgs/Twist)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+ing lanefollow_sim.drawio…]()
+
 
 ## 파일 구조
 
