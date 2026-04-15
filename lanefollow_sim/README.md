@@ -14,7 +14,8 @@ ROS 2 기반의 카메라 영상을 활용한 **차선 인식 및 추종 시뮬�
 ---
 
 ## 블럭도
-<img width="1181" height="741" alt="lanefollow_sim" src="https://github.com/user-attachments/assets/3365edbb-0239-45c0-9692-fb3cdeb03a9d" />
+<img width="1181" height="741" alt="lanefollow_sim" src="https://github.com/user-attachments/assets/b96be382-b9cb-425c-b0f8-3a6cef04a96a" />
+
 
 
 ## 파일 구조
